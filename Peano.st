@@ -11,30 +11,46 @@ DenotativeObject subclass: #I
 I class
 	instanceVariableNames: ''!
 
-!I class methodsFor: 'axioms' stamp: 'Matias C 8/24/2023 23:19:12'!
+!I class methodsFor: 'operaciones' stamp: 'Matias C 8/24/2023 23:19:12'!
 * aNaturalNumber
 	^aNaturalNumber.! !
 
-!I class methodsFor: 'axioms' stamp: 'Matias C 8/24/2023 21:31:14'!
+!I class methodsFor: 'operaciones' stamp: 'Matias C 8/24/2023 21:31:14'!
 + aNaturalNumber
 	^aNaturalNumber next.! !
 
-!I class methodsFor: 'axioms' stamp: 'Matias C 8/25/2023 12:12:40'!
-/ aNaturalNumber
-	self = aNaturalNumber ifTrue: [^I].! !
+!I class methodsFor: 'operaciones' stamp: 'Matias C 8/28/2023 21:43:41'!
+- aNaturalNumber
+	^self error: self descripcionDeErrorDeNumerosNegativosNoSoportados.! !
 
-!I class methodsFor: 'axioms' stamp: 'Matias C 8/25/2023 12:27:01'!
+!I class methodsFor: 'operaciones' stamp: 'Matias C 8/28/2023 21:45:15'!
+/ aNaturalNumber
+	self = aNaturalNumber ifTrue: [^I].
+	^self error: self descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor.! !
+
+!I class methodsFor: 'operaciones' stamp: 'Matias C 8/28/2023 20:35:59'!
+substractTo: aNaturalNumber
+	^aNaturalNumber previous.! !
+
+
+!I class methodsFor: 'comparaciones' stamp: 'Matias C 8/25/2023 12:27:01'!
 < aNaturalNumber
 	aNaturalNumber = I ifTrue: [^false].
 	^true.! !
 
-!I class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:35:22'!
+
+!I class methodsFor: 'errores' stamp: 'Matias C 8/28/2023 21:45:03'!
+descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor
+	^'Error en operación: no se puede dividir por un número mayor'.! !
+
+!I class methodsFor: 'errores' stamp: 'Matias C 8/28/2023 21:42:04'!
+descripcionDeErrorDeNumerosNegativosNoSoportados
+	^'Operación no soportada: número negativo'.! !
+
+
+!I class methodsFor: 'axiomas' stamp: 'Matias C 8/28/2023 20:35:22'!
 next
 	^II.! !
-
-!I class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:35:59'!
-substractTo: aNaturalNumber
-	^aNaturalNumber previous.! !
 
 
 !classDefinition: #II category: 'Peano'!
@@ -50,50 +66,58 @@ DenotativeObject subclass: #II
 II class
 	instanceVariableNames: 'next previous'!
 
-!II class methodsFor: 'axioms' stamp: 'Matias C 8/24/2023 23:21:13'!
-* aNaturalNumber
-	^(self previous * aNaturalNumber) + aNaturalNumber.! !
+!II class methodsFor: 'errores' stamp: 'Matias C 8/28/2023 21:47:38'!
+descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor
+	^'Error en operación: no se puede dividir por un número mayor'.! !
 
-!II class methodsFor: 'axioms' stamp: 'Matias C 8/24/2023 21:29:45'!
-+ aNaturalNumber
-	^self previous + aNaturalNumber next.! !
 
-!II class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:36:27'!
-- aNaturalNumber
-	^aNaturalNumber substractTo: self.! !
-
-!II class methodsFor: 'axioms' stamp: 'Matias C 8/25/2023 12:34:08'!
-/ aNaturalNumber
-	self = aNaturalNumber ifTrue: [^I].
-	(self - aNaturalNumber) < aNaturalNumber		ifTrue: [^I].
-	^I + ((self - aNaturalNumber) / aNaturalNumber).! !
-
-!II class methodsFor: 'axioms' stamp: 'Matias C 8/25/2023 12:26:41'!
+!II class methodsFor: 'comparaciones' stamp: 'Matias C 8/25/2023 12:26:41'!
 < aNaturalNumber
 	aNaturalNumber = I ifTrue: [^false].
 	^self previous < aNaturalNumber previous! !
 
-!II class methodsFor: 'axioms' stamp: 'Matias C 8/24/2023 21:29:45'!
-next
-	next ifNotNil: [^next].
-	next := self cloneNamed: self name, 'I'.
-	next previous: self.
-	^next.! !
 
-!II class methodsFor: 'axioms' stamp: 'Matias C 8/24/2023 21:29:45'!
-previous
-	^previous.! !
+!II class methodsFor: 'operaciones' stamp: 'Matias C 8/24/2023 23:21:13'!
+* aNaturalNumber
+	^(self previous * aNaturalNumber) + aNaturalNumber.! !
 
-!II class methodsFor: 'axioms' stamp: 'Matias C 8/24/2023 21:29:45'!
-previous: aNaturalNumber
-	previous := aNaturalNumber.! !
+!II class methodsFor: 'operaciones' stamp: 'Matias C 8/24/2023 21:29:45'!
++ aNaturalNumber
+	^self previous + aNaturalNumber next.! !
 
-!II class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:38:30'!
+!II class methodsFor: 'operaciones' stamp: 'Matias C 8/28/2023 20:36:27'!
+- aNaturalNumber
+	^aNaturalNumber substractTo: self.! !
+
+!II class methodsFor: 'operaciones' stamp: 'Matias C 8/28/2023 21:48:26'!
+/ aNaturalNumber
+	self < aNaturalNumber ifTrue: [^self error: self descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor ].
+	self = aNaturalNumber ifTrue: [^I].
+	(self - aNaturalNumber) < aNaturalNumber		ifTrue: [^I].
+	^I + ((self - aNaturalNumber) / aNaturalNumber).! !
+
+!II class methodsFor: 'operaciones' stamp: 'Matias C 8/28/2023 20:38:30'!
 substractTo: aNaturalNumber
 	^aNaturalNumber previous - self previous.! !
 
 
-!II class methodsFor: '--** private fileout/in **--' stamp: 'Matias C 8/28/2023 21:09:03'!
+!II class methodsFor: 'axiomas' stamp: 'Matias C 8/28/2023 21:12:22'!
+next
+	next ifNotNil: [^next].
+	next := II createChildNamed: self name, 'I'.
+	next previous: self.
+	^next.! !
+
+!II class methodsFor: 'axiomas' stamp: 'Matias C 8/24/2023 21:29:45'!
+previous
+	^previous.! !
+
+!II class methodsFor: 'axiomas' stamp: 'Matias C 8/24/2023 21:29:45'!
+previous: aNaturalNumber
+	previous := aNaturalNumber.! !
+
+
+!II class methodsFor: '--** private fileout/in **--' stamp: 'Matias C 8/28/2023 21:54:05'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -102,7 +126,7 @@ initializeCollaboratorsFromFile
 
 
 !classDefinition: #III category: 'Peano'!
-DenotativeObject subclass: #III
+II subclass: #III
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -112,52 +136,9 @@ DenotativeObject subclass: #III
 
 !classDefinition: 'III class' category: 'Peano'!
 III class
-	instanceVariableNames: 'next previous'!
+	instanceVariableNames: ''!
 
-!III class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:19'!
-* aNaturalNumber
-	^(self previous * aNaturalNumber) + aNaturalNumber.! !
-
-!III class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:19'!
-+ aNaturalNumber
-	^self previous + aNaturalNumber next.! !
-
-!III class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:19'!
-- aNaturalNumber
-	^aNaturalNumber substractTo: self.! !
-
-!III class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:19'!
-/ aNaturalNumber
-	self = aNaturalNumber ifTrue: [^I].
-	(self - aNaturalNumber) < aNaturalNumber		ifTrue: [^I].
-	^I + ((self - aNaturalNumber) / aNaturalNumber).! !
-
-!III class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:19'!
-< aNaturalNumber
-	aNaturalNumber = I ifTrue: [^false].
-	^self previous < aNaturalNumber previous! !
-
-!III class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:19'!
-next
-	next ifNotNil: [^next].
-	next := self cloneNamed: self name, 'I'.
-	next previous: self.
-	^next.! !
-
-!III class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:19'!
-previous
-	^previous.! !
-
-!III class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:19'!
-previous: aNaturalNumber
-	previous := aNaturalNumber.! !
-
-!III class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:19'!
-substractTo: aNaturalNumber
-	^aNaturalNumber previous - self previous.! !
-
-
-!III class methodsFor: '--** private fileout/in **--' stamp: 'Matias C 8/28/2023 21:09:03'!
+!III class methodsFor: '--** private fileout/in **--' stamp: 'Matias C 8/28/2023 21:54:05'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -166,7 +147,7 @@ initializeCollaboratorsFromFile
 
 
 !classDefinition: #IIII category: 'Peano'!
-DenotativeObject subclass: #IIII
+II subclass: #IIII
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -176,188 +157,15 @@ DenotativeObject subclass: #IIII
 
 !classDefinition: 'IIII class' category: 'Peano'!
 IIII class
-	instanceVariableNames: 'next previous'!
+	instanceVariableNames: ''!
 
-!IIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-* aNaturalNumber
-	^(self previous * aNaturalNumber) + aNaturalNumber.! !
-
-!IIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-+ aNaturalNumber
-	^self previous + aNaturalNumber next.! !
-
-!IIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-- aNaturalNumber
-	^aNaturalNumber substractTo: self.! !
-
-!IIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-/ aNaturalNumber
-	self = aNaturalNumber ifTrue: [^I].
-	(self - aNaturalNumber) < aNaturalNumber		ifTrue: [^I].
-	^I + ((self - aNaturalNumber) / aNaturalNumber).! !
-
-!IIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-< aNaturalNumber
-	aNaturalNumber = I ifTrue: [^false].
-	^self previous < aNaturalNumber previous! !
-
-!IIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-next
-	next ifNotNil: [^next].
-	next := self cloneNamed: self name, 'I'.
-	next previous: self.
-	^next.! !
-
-!IIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-previous
-	^previous.! !
-
-!IIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-previous: aNaturalNumber
-	previous := aNaturalNumber.! !
-
-!IIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-substractTo: aNaturalNumber
-	^aNaturalNumber previous - self previous.! !
-
-
-!IIII class methodsFor: '--** private fileout/in **--' stamp: 'Matias C 8/28/2023 21:09:03'!
-initializeCollaboratorsFromFile
-	"Auto generated method for loading purposes - Do not modify it"
-
-	next := IIIII.
-	previous := III.! !
-
-
-!classDefinition: #IIIII category: 'Peano'!
-DenotativeObject subclass: #IIIII
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Peano'!
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'IIIII class' category: 'Peano'!
-IIIII class
-	instanceVariableNames: 'next previous'!
-
-!IIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-* aNaturalNumber
-	^(self previous * aNaturalNumber) + aNaturalNumber.! !
-
-!IIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-+ aNaturalNumber
-	^self previous + aNaturalNumber next.! !
-
-!IIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-- aNaturalNumber
-	^aNaturalNumber substractTo: self.! !
-
-!IIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-/ aNaturalNumber
-	self = aNaturalNumber ifTrue: [^I].
-	(self - aNaturalNumber) < aNaturalNumber		ifTrue: [^I].
-	^I + ((self - aNaturalNumber) / aNaturalNumber).! !
-
-!IIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-< aNaturalNumber
-	aNaturalNumber = I ifTrue: [^false].
-	^self previous < aNaturalNumber previous! !
-
-!IIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-next
-	next ifNotNil: [^next].
-	next := self cloneNamed: self name, 'I'.
-	next previous: self.
-	^next.! !
-
-!IIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-previous
-	^previous.! !
-
-!IIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-previous: aNaturalNumber
-	previous := aNaturalNumber.! !
-
-!IIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-substractTo: aNaturalNumber
-	^aNaturalNumber previous - self previous.! !
-
-
-!IIIII class methodsFor: '--** private fileout/in **--' stamp: 'Matias C 8/28/2023 21:09:03'!
-initializeCollaboratorsFromFile
-	"Auto generated method for loading purposes - Do not modify it"
-
-	next := IIIIII.
-	previous := IIII.! !
-
-
-!classDefinition: #IIIIII category: 'Peano'!
-DenotativeObject subclass: #IIIIII
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Peano'!
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'IIIIII class' category: 'Peano'!
-IIIIII class
-	instanceVariableNames: 'next previous'!
-
-!IIIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-* aNaturalNumber
-	^(self previous * aNaturalNumber) + aNaturalNumber.! !
-
-!IIIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-+ aNaturalNumber
-	^self previous + aNaturalNumber next.! !
-
-!IIIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-- aNaturalNumber
-	^aNaturalNumber substractTo: self.! !
-
-!IIIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-/ aNaturalNumber
-	self = aNaturalNumber ifTrue: [^I].
-	(self - aNaturalNumber) < aNaturalNumber		ifTrue: [^I].
-	^I + ((self - aNaturalNumber) / aNaturalNumber).! !
-
-!IIIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-< aNaturalNumber
-	aNaturalNumber = I ifTrue: [^false].
-	^self previous < aNaturalNumber previous! !
-
-!IIIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-next
-	next ifNotNil: [^next].
-	next := self cloneNamed: self name, 'I'.
-	next previous: self.
-	^next.! !
-
-!IIIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-previous
-	^previous.! !
-
-!IIIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-previous: aNaturalNumber
-	previous := aNaturalNumber.! !
-
-!IIIIII class methodsFor: 'axioms' stamp: 'Matias C 8/28/2023 20:39:40'!
-substractTo: aNaturalNumber
-	^aNaturalNumber previous - self previous.! !
-
-
-!IIIIII class methodsFor: '--** private fileout/in **--' stamp: 'Matias C 8/28/2023 21:09:03'!
+!IIII class methodsFor: '--** private fileout/in **--' stamp: 'Matias C 8/28/2023 21:54:05'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
 	next := nil.
-	previous := IIIII.! !
+	previous := III.! !
 
 II initializeAfterFileIn!
 III initializeAfterFileIn!
 IIII initializeAfterFileIn!
-IIIII initializeAfterFileIn!
-IIIIII initializeAfterFileIn!
