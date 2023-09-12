@@ -369,10 +369,10 @@ Numero subclass: #Entero
 	
 	^aMultiplier multiplyByEntero: self! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:16:04'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:37:37'!
 + anAdder 
 	
-	^anAdder addEntero: self! !
+	^anAdder addToEntero: self! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:19:13'!
 - aSubtrahend 
@@ -389,25 +389,25 @@ Numero subclass: #Entero
 	
 	^self class with: value // aDivisor integerValue! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:15:47'!
-addEntero: anEntero
+!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:37:37'!
+addToEntero: firstAdder
 
-	^self class with: (value + anEntero integerValue)! !
+	^self class with: (firstAdder integerValue + value)! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:16:37'!
-addFraccion: aFraccion
+!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:38:48'!
+addToFraccion: firstAdder
 
-	^(self * aFraccion denominator + aFraccion numerator) / aFraccion denominator! !
+	^(firstAdder numerator + (self * firstAdder denominator)) / firstAdder denominator! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:17:55'!
-divideEntero: anEntero
+!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:39:14'!
+divideEntero: aDividend
 
-	^Fraccion with: anEntero over: self! !
+	^Fraccion with: aDividend over: self! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:18:24'!
-divideFraccion: aFraccion
+!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:39:29'!
+divideFraccion: aDividend
 
-	^aFraccion numerator / (aFraccion denominator * self)! !
+	^aDividend numerator / (aDividend denominator * self)! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:15:45'!
 fibonacci
@@ -420,25 +420,30 @@ greatestCommonDivisorWith: anEntero
 	
 	^self class with: (value gcd: anEntero integerValue)! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:13:58'!
-multiplyByEntero: anEntero
+!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:31:50'!
+makeFraccionWithNumerator: anEntero
 
-	^self class with: (value * anEntero integerValue)! !
+	self subclassResponsibility! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:14:50'!
-multiplyByFraccion: aFraccion
+!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:45:19'!
+multiplyByEntero: aFactor
 
-	^(self * aFraccion numerator) / aFraccion denominator! !
+	^self class with: (value * aFactor integerValue)! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:19:25'!
-subtractFromEntero: anEntero 
+!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:45:16'!
+multiplyByFraccion: aFactor
+
+	^(self * aFactor numerator) / aFactor denominator! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:43:11'!
+subtractFromEntero: aMinuend 
 	
-	^self class with: (anEntero integerValue - value)! !
+	^self class with: (aMinuend integerValue - value)! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:19:56'!
-subtractFromFraccion: aFraccion 
+!Entero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:43:20'!
+subtractFromFraccion: aMinuend 
 
-	^(aFraccion numerator - (self * aFraccion denominator)) / aFraccion denominator! !
+	^(aMinuend numerator - (self * aMinuend denominator)) / aMinuend denominator! !
 
 
 !Entero methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 21:01'!
@@ -521,21 +526,6 @@ initialize
 
 	value := 0! !
 
-
-!Cero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:14:04'!
-/ aNumero
-
-	^self class new! !
-
-!Cero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:14:00'!
-divideEntero
-
-	self error: Numero canNotDivideByZeroErrorDescription! !
-
-!Cero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:14:07'!
-divideFraccion
-
-	self error: Numero canNotDivideByZeroErrorDescription! !
 
 !Cero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:14:10'!
 fibonacci
@@ -645,16 +635,6 @@ Entero subclass: #Uno
 	poolDictionaries: ''
 	category: 'Numero-Exercise'!
 
-!Uno methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:15:08'!
-divideEntero: anEntero
-
-	^anEntero! !
-
-!Uno methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:15:12'!
-divideFraccion: aFraccion
-
-	^aFraccion! !
-
 !Uno methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:15:15'!
 fibonacci
 
@@ -700,10 +680,10 @@ Numero subclass: #Fraccion
 	
 	^aMultiplier multiplyByFraccion: self! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:17:02'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:37:59'!
 + anAdder 
 	
-	^anAdder addFraccion: self! !
+	^anAdder addToFraccion: self! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:20:05'!
 - aSubtrahend 
@@ -716,45 +696,45 @@ Numero subclass: #Fraccion
 	
 	^aDivisor divideFraccion: self! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:15:34'!
-addEntero: anEntero
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:47:44'!
+addToEntero: firstAdder
 
-	^(numerator + (anEntero * denominator)) / denominator! !
+	^((firstAdder * denominator) + numerator) / denominator! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:17:12'!
-addFraccion: aFraccion
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:47:13'!
+addToFraccion: firstAdder
 
-	^((numerator * aFraccion denominator) + (aFraccion numerator * denominator)) / (denominator * aFraccion denominator)! !
+	^((firstAdder numerator * denominator) + (numerator * firstAdder denominator)) / (firstAdder denominator * denominator)! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:18:06'!
-divideEntero: anEntero
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:45:44'!
+divideEntero: aDividend
 
-	^(anEntero * denominator) / numerator! !
+	^(aDividend * denominator) / numerator! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:18:47'!
-divideFraccion: aFraccion
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:45:39'!
+divideFraccion: aDividend
 
-	^(aFraccion numerator * denominator) / (aFraccion denominator * numerator)! !
+	^(aDividend numerator * denominator) / (aDividend denominator * numerator)! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:14:19'!
-multiplyByEntero: anEntero
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:44:58'!
+multiplyByEntero: aFactor
 
-	^(numerator * anEntero) / denominator! !
+	^(numerator * aFactor) / denominator! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:15:14'!
-multiplyByFraccion: aFraccion
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:45:07'!
+multiplyByFraccion: aFactor
 
-	^(numerator * aFraccion numerator) / (denominator * aFraccion denominator)! !
+	^(numerator * aFactor numerator) / (denominator * aFactor denominator)! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:19:37'!
-subtractFromEntero: anEntero
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:43:38'!
+subtractFromEntero: aMinuend
 
-	^((anEntero * denominator) - numerator) / denominator! !
+	^((aMinuend * denominator) - numerator) / denominator! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 19:20:15'!
-subtractFromFraccion: aFraccion
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'Matias C 9/11/2023 21:43:45'!
+subtractFromFraccion: aMinuend
 
-	^((aFraccion numerator * denominator) - (numerator * aFraccion denominator)) / (denominator * aFraccion denominator)! !
+	^((aMinuend numerator * denominator) - (numerator * aMinuend denominator)) / (denominator * aMinuend denominator)! !
 
 
 !Fraccion methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 20:42'!
@@ -820,7 +800,7 @@ printOn: aStream
 Fraccion class
 	instanceVariableNames: ''!
 
-!Fraccion class methodsFor: 'intance creation' stamp: 'Matias C 9/11/2023 21:12:59'!
+!Fraccion class methodsFor: 'intance creation' stamp: 'Matias C 9/11/2023 21:32:49'!
 with: aDividend over: aDivisor
 
 	| greatestCommonDivisor numerator denominator |
@@ -828,5 +808,5 @@ with: aDividend over: aDivisor
 	greatestCommonDivisor := aDividend greatestCommonDivisorWith: aDivisor. 
 	numerator := aDividend // greatestCommonDivisor.
 	denominator := aDivisor // greatestCommonDivisor.
-	
+
 	^denominator makeFraccionWithNumerator: numerator! !
