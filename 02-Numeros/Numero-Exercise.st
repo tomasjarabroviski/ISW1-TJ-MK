@@ -314,15 +314,55 @@ Object subclass: #Numero
 
 	self subclassResponsibility ! !
 
+!Numero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/13/2023 11:15:16'!
+addToEntero: firstAdder
+
+	self subclassResponsibility ! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/13/2023 11:15:23'!
+addToFraccion: firstAdder
+
+	self subclassResponsibility ! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/13/2023 11:17:02'!
+divideEntero: aDividend
+
+	self subclassResponsibility ! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/13/2023 11:17:06'!
+divideFraccion: aDividend
+
+	self subclassResponsibility ! !
+
 !Numero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 22:48'!
 invalidNumberType
 
 	self error: self class invalidNumberTypeErrorDescription! !
 
+!Numero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/13/2023 11:17:27'!
+multiplyByEntero: aFactor
+
+	self subclassResponsibility ! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/13/2023 11:17:31'!
+multiplyByFraccion: aFactor
+
+	self subclassResponsibility ! !
+
 !Numero methodsFor: 'arithmetic operations' stamp: 'NR 9/23/2018 23:37:13'!
 negated
 	
 	^self * (Entero with: -1)! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/13/2023 11:17:45'!
+subtractFromEntero: aMinuend
+
+	self subclassResponsibility ! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'Matias C 9/13/2023 11:17:49'!
+subtractFromFraccion: aMinuend
+
+	self subclassResponsibility ! !
 
 
 !Numero methodsFor: 'testing' stamp: 'NR 9/23/2018 23:36:49'!
