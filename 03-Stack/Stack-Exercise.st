@@ -149,8 +149,8 @@ setUp
 	sentenceFinderByPrefix := SentenceFinderByPrefix new! !
 
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'Matias C 9/14/2023 20:45:18'!
-test01emptyStringIsNotPrefix
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'Matias C 9/17/2023 15:10:42'!
+test01emptyStringIsNotAPrefix
 	| stack |
 	stack := OOStack new.
 	self
@@ -159,8 +159,8 @@ test01emptyStringIsNotPrefix
 		withExceptionDo: [ :anError |
 			self assert: anError messageText = SentenceFinderByPrefix emptyPrefixStringErrorDescription ]! !
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'Matias C 9/14/2023 20:45:46'!
-test02stringWithWhitespaceIsNotPrefix
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'Matias C 9/17/2023 15:10:47'!
+test02stringWithWhitespaceIsNotAPrefix
 	| stack |
 	stack := OOStack new.
 	self
@@ -169,40 +169,63 @@ test02stringWithWhitespaceIsNotPrefix
 		withExceptionDo: [ :anError |
 			self assert: anError messageText = SentenceFinderByPrefix prefixStringHasWhitespaceErrorDescription ]! !
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'Matias C 9/14/2023 21:52:28'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'Matias C 9/17/2023 15:10:10'!
 test03stackIsNotModifiedBySearch
 	| stack sentences |
 	stack := OOStack new.
 	sentences := #('Winter is coming' 'winning is everything' 'The winds of Winter' 'Winter is here').
-	sentences do: [:sentence | stack push: sentence ].
+	sentences do: [ :sentence | stack push: sentence ].
 
 	sentenceFinderByPrefix findPrefix: 'Wint' inStack: stack.	
 
-	self assert: ((sentences reversed) allSatisfy: [:sentence | sentence = stack pop ]).
+	self assert: ((sentences reversed) allSatisfy: [ :sentence | sentence = stack pop ]).
 	self assert: stack isEmpty! !
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'Matias C 9/14/2023 21:25:30'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'Matias C 9/16/2023 13:42:28'!
 test04findsSingleElementCaseSensitive
 	| stack sentences findResult |
 	stack := OOStack new.
 	sentences := #('winter is coming' 'winning is everything' 'The winds of Winter' 'Winter is here' 'winter is here').
-	sentences do: [:sentence | stack push: sentence ].
+	sentences do: [ :sentence | stack push: sentence ].
 
 	findResult := sentenceFinderByPrefix findPrefix: 'Wint' inStack: stack.
-	self assert: [ findResult at: 1 = 'Winter is here' ].
-	self assert: [ findResult size = 1 ]. ! !
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'Matias C 9/14/2023 21:24:20'!
+	self assert: (findResult at: 1) = 'Winter is here'.
+	self assert: findResult size = 1! !
+
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'Matias C 9/17/2023 15:07:34'!
 test05findsMultipleElements
 	| stack sentences findResult |
 	stack := OOStack new.
 	sentences := #('Winter is coming' 'winning is everything' 'winter is here' 'Winter is here' 'Winter ').
-	sentences do: [:sentence | stack push: sentence ].
+	sentences do: [ :sentence | stack push: sentence ].
+
 	findResult := sentenceFinderByPrefix findPrefix: 'Wint' inStack: stack.
-	self assert: (sentences at: 1) = (findResult at: 1).	
-	self assert: (sentences at: 4) = (findResult at: 2).	
-	self assert: (sentences at: 5) = (findResult at: 3).
+
+	self assert: findResult includes: (sentences at: 1).	
+	self assert: findResult includes: (sentences at: 4).	
+	self assert: findResult includes: (sentences at: 5).
 	self assert: findResult size = 3! !
+
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'Matias C 9/17/2023 15:04:14'!
+test06findsNoElements
+	| stack sentences findResult |
+	stack := OOStack new.
+	sentences := #('Winter is coming' 'winning is everything' 'winter is here' 'Winter is here' 'Winter ').
+	sentences do: [ :sentence | stack push: sentence ].
+
+	findResult := sentenceFinderByPrefix findPrefix: 'Summer' inStack: stack.
+
+	self assert: findResult isEmpty! !
+
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'Matias C 9/17/2023 15:09:24'!
+test07worksWithEmptyStack
+	| stack findResult |
+	stack := OOStack new.
+
+	findResult := sentenceFinderByPrefix findPrefix: 'Wint' inStack: stack.
+
+	self assert: findResult isEmpty! !
 
 
 !classDefinition: #OOStack category: 'Stack-Exercise'!
@@ -350,24 +373,42 @@ Object subclass: #SentenceFinderByPrefix
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!SentenceFinderByPrefix methodsFor: 'finding' stamp: 'Matias C 9/15/2023 12:27:01'!
+!SentenceFinderByPrefix methodsFor: 'finding' stamp: 'Matias C 9/16/2023 13:47:34'!
 findPrefix: aPrefixString inStack: aStackToSearch
-	| prefix popedElements sentencesWithPrefix stackSize |
-	prefix := Prefix with: aPrefixString.
-	popedElements := OrderedCollection new.
-	sentencesWithPrefix := OrderedCollection new.
+	| prefix |
 
-	stackSize := aStackToSearch size.
-	1 to: stackSize do: [
+	prefix := Prefix with: aPrefixString.
+	^self fromStack: aStackToSearch selectAsOrderedCollection: [ :sentence | prefix isPrefixOf: sentence ]! !
+
+
+!SentenceFinderByPrefix methodsFor: 'stack selection' stamp: 'Matias C 9/16/2023 13:44:17'!
+consumeStack: aStackToConsume doing: perElementClosure
+	| stackSize |
+	stackSize := aStackToConsume size.
+	stackSize timesRepeat: [ 
 		| popedElement |
-		popedElement :=		aStackToSearch pop.	
-		popedElements addFirst: popedElement.
-		(prefix isPrefixOf: popedElement) ifTrue: [ sentencesWithPrefix addLast: popedElement ].
+		popedElement := aStackToConsume pop.
+		perElementClosure value: 	popedElement.
+	]! !
+
+!SentenceFinderByPrefix methodsFor: 'stack selection' stamp: 'Matias C 9/17/2023 15:01:56'!
+fromStack: aStackToSelectFrom selectAsOrderedCollection: perElementPredicate
+	| popedElements selectedElements |
+	popedElements := OOStack new.
+	selectedElements := OrderedCollection new.
+
+	self consumeStack: aStackToSelectFrom doing: [ :popedElement |
+		popedElements push: popedElement.
+		(perElementPredicate value: popedElement) ifTrue: [ 
+			selectedElements addLast: popedElement
+		].
 	].
 
-	popedElements do: [:element | aStackToSearch push: element]
+	self consumeStack: popedElements doing: [ :popedElement | 
+		aStackToSelectFrom push: popedElement.	
+	].
 
-	^sentencesWithPrefix ! !
+	^selectedElements! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
