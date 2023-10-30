@@ -148,6 +148,18 @@ test12WindowLoggerCanLogPositionAndHead
 	self assert: windowLogger position equals: '-2@2'.
 	self assert: windowLogger head equals: 'Apuntando al Sur'.! !
 
+!MarsRoverLogTest methodsFor: 'tests' stamp: 'Matias Cra 10/30/2023 14:53:35'!
+test13CantAddLoggerToNonExistantAspect
+	| rover logger |
+	rover := MarsRover at: 1@1 heading: self north.
+	logger := RoverGenericLogger new.
+	self should: [ rover addLogger: logger to: 'darío' ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError | 
+			self assert: anError messageText equals: MarsRover cannotLogNonExistantAspectErrorDescription	.
+			self deny: (logger isLogging: rover)
+		]! !
+
 
 !MarsRoverLogTest methodsFor: 'headings' stamp: 'Matias Cra 10/26/2023 20:33:52'!
 east
@@ -432,7 +444,7 @@ test05CanAttachMultipleObservers
 	self assert: logger log asArray equals: #('2' '3' '4' '5').
 	self assert: secondLogger log asArray equals: #('4' '5').! !
 
-!ObservableProxyTest methodsFor: 'tests' stamp: 'Matias Cra 10/29/2023 21:48:38'!
+!ObservableProxyTest methodsFor: 'tests' stamp: 'Matias Cra 10/30/2023 14:47:24'!
 test06CanSendMessagesToValue
 	| proxy logger |
 	proxy := ObservableProxy for: OrderedCollection new.
@@ -440,10 +452,10 @@ test06CanSendMessagesToValue
 	proxy attach: logger using: [ :observer :objectToLog | observer updateLog: objectToLog ].
 	proxy add: 1.
 	proxy add: 'Pepe'.
-	self assert: proxy value equals: (OrderedCollection with: 1 with: 'Pepe').
+	self assert: proxy equals: (OrderedCollection with: 1 with: 'Pepe').
 	self assert: logger log isEmpty.! !
 
-!ObservableProxyTest methodsFor: 'tests' stamp: 'Matias Cra 10/29/2023 21:48:38'!
+!ObservableProxyTest methodsFor: 'tests' stamp: 'Matias Cra 10/30/2023 14:47:01'!
 test07CanSendMessagesToValueAndRecieveAnswer
 	| proxy logger |
 	proxy := ObservableProxy for: Monday.
@@ -451,7 +463,7 @@ test07CanSendMessagesToValueAndRecieveAnswer
 	proxy attach: logger using: [ :observer :objectToLog | observer updateLog: objectToLog ].
 	
 	self deny: proxy isSaturday.
-	self assert: proxy value equals: Monday.
+	self assert: (proxy equals: Monday).
 	self assert: logger log isEmpty.! !
 
 !ObservableProxyTest methodsFor: 'tests' stamp: 'Matias Cra 10/29/2023 21:48:38'!
@@ -509,6 +521,12 @@ ChangesLogger subclass: #RoverLogger
 setRover: aRover
 
 	rover := aRover! !
+
+
+!RoverLogger methodsFor: 'testing' stamp: 'Matias Cra 10/30/2023 14:52:28'!
+isLogging: aMarsRover
+
+	^ aMarsRover = rover! !
 
 
 !classDefinition: #RoverGenericLogger category: 'MarsRover-WithHeading'!
@@ -637,10 +655,10 @@ rotateRight
 	head rotateRight! !
 
 
-!MarsRover methodsFor: 'testing' stamp: 'Matias Cra 10/29/2023 19:58:19'!
+!MarsRover methodsFor: 'testing' stamp: 'Matias Cra 10/30/2023 14:48:24'!
 isAt: aPosition heading: aHeadingType
 
-	^ position value = aPosition and: [ head isHeading: aHeadingType ]	! !
+	^ (position equals: aPosition) and: [ head isHeading: aHeadingType ]	! !
 
 !MarsRover methodsFor: 'testing' stamp: 'HAW 7/6/2018 18:16:51'!
 isBackwardCommand: aCommand
@@ -668,30 +686,30 @@ moveBackward
 	
 	head moveBackward! !
 
-!MarsRover methodsFor: 'moving' stamp: 'Matias Cra 10/29/2023 19:27:28'!
+!MarsRover methodsFor: 'moving' stamp: 'Matias Cra 10/30/2023 15:05:06'!
 moveEast
 	
-	position set: position value + (1@0)! !
+	position set: position + (1@0)! !
 
 !MarsRover methodsFor: 'moving' stamp: 'Matias Cra 10/29/2023 19:50:32'!
 moveForward
 	
 	head moveForward! !
 
-!MarsRover methodsFor: 'moving' stamp: 'Matias Cra 10/29/2023 19:27:37'!
+!MarsRover methodsFor: 'moving' stamp: 'Matias Cra 10/30/2023 15:05:00'!
 moveNorth
 	
-	position set: position value + (0@1)! !
+	position set: position + (0@1)! !
 
-!MarsRover methodsFor: 'moving' stamp: 'Matias Cra 10/29/2023 19:27:46'!
+!MarsRover methodsFor: 'moving' stamp: 'Matias Cra 10/30/2023 15:04:45'!
 moveSouth
 	
-	position set: position value + (0@-1)! !
+	position set: position + (0@-1)! !
 
-!MarsRover methodsFor: 'moving' stamp: 'Matias Cra 10/29/2023 19:27:57'!
+!MarsRover methodsFor: 'moving' stamp: 'Matias Cra 10/30/2023 15:04:28'!
 moveWest
 	
-	position set: position value + (-1@0)! !
+	position set: position + (-1@0)! !
 
 
 !MarsRover methodsFor: 'command processing' stamp: 'HAW 6/30/2018 19:48:26'!
@@ -721,28 +739,46 @@ addLogger: aLogger to: aCollaboratorName
 
 	self addLogger: aLogger to: aCollaboratorName using: [ :logger :objectToLog | logger updateLog: objectToLog ]! !
 
-!MarsRover methodsFor: 'logging' stamp: 'Matias Cra 10/29/2023 21:48:38'!
+!MarsRover methodsFor: 'logging' stamp: 'Matias Cra 10/30/2023 14:55:37'!
 addLogger: aLogger to: aCollaboratorName using: aLoggingClosure
-
+	
 	aCollaboratorName ifEmpty: [
 		^ self attatchToAll: aLogger using: aLoggingClosure
 	].
 
+	self assertValidAspect: aCollaboratorName.
 	(self instVarNamed: aCollaboratorName) attach: aLogger using: aLoggingClosure.
 	aLogger setRover: self.! !
 
-!MarsRover methodsFor: 'logging' stamp: 'Matias Cra 10/29/2023 21:48:38'!
+!MarsRover methodsFor: 'logging' stamp: 'Matias Cra 10/30/2023 14:56:18'!
+assertValidAspect: aCollaboratorName
+
+	(self isCollaborator: aCollaboratorName) ifFalse: [ self error: self class cannotLogNonExistantAspectErrorDescription ] 
+! !
+
+!MarsRover methodsFor: 'logging' stamp: 'Matias Cra 10/30/2023 14:55:21'!
 attatchToAll: aLogger using: aLoggingClosure
 	
 	self class allInstVarNames do: [ :aCollaboratorName |
 		(self instVarNamed: aCollaboratorName) attach: aLogger using: aLoggingClosure.
 	]! !
 
+!MarsRover methodsFor: 'logging' stamp: 'Matias Cra 10/30/2023 14:59:35'!
+isCollaborator: aCollaboratorName
+
+	^ self class allInstVarNames includes: 	aCollaboratorName ! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'MarsRover class' category: 'MarsRover-WithHeading'!
 MarsRover class
 	instanceVariableNames: 'headings'!
+
+!MarsRover class methodsFor: 'errors' stamp: 'Matias Cra 10/30/2023 14:54:40'!
+cannotLogNonExistantAspectErrorDescription
+
+	^ 'Can''t add logger: specified aspect isn''t part of a Mars Rover'! !
+
 
 !MarsRover class methodsFor: 'instance creation' stamp: 'HAW 10/7/2021 20:10:30'!
 at: aPosition heading: aHeadingType
@@ -967,6 +1003,11 @@ doesNotUnderstand: aMessage
 	
 	^ aMessage sendTo: data! !
 
+
+!ObservableProxy methodsFor: 'testing' stamp: 'Matias Cra 10/30/2023 14:46:36'!
+equals: aValue
+
+	^ data = aValue! !
 
 !ObservableProxy methodsFor: 'testing' stamp: 'Matias Cra 10/29/2023 22:01:40'!
 hasObserver: anObserver
