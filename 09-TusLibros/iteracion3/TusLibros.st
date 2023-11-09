@@ -686,6 +686,23 @@ test26CannotAccessCartBeforeCreation
 		raise: Error - MessageNotUnderstood
 		withMessageText: interface unknownErrorMessage.! !
 
+!InternalClientInterfaceTest methodsFor: 'tests' stamp: 'MatiasCra 11/9/2023 15:43:49'!
+test27CannotModifyPurchaseWithoutCheckout
+	| cartId interface purchase |
+
+	isValidUserBehavour := [ :userId :password | true ].
+	interface := self createInterface.
+	cartId := self interface: interface createCartClient: 1 password: 'abcdefg123'.
+	interface addToCart: cartId book: testObjectsFactory itemSellByTheStore quantity: 12.
+	
+	interface checkOut: cartId charging: testObjectsFactory notExpiredCreditCard.
+
+	purchase := interface listPurchasesClient: 1 password: 'abcdefg123'.
+	 
+	self shouldFail: [ purchase add: (Sale of: #('Pepe') total: 100) ].
+	self deny: ((interface listPurchasesClient: 1 password: 'abcdefg123') includes: 'Pepe').
+	! !
+
 
 !InternalClientInterfaceTest methodsFor: 'setup' stamp: 'MatiasCra 11/9/2023 14:02:47'!
 setUp 
@@ -1087,10 +1104,10 @@ nextTransactionId
 
 	^ lastTransactionId := lastTransactionId + 1! !
 
-!InternalClientInterface methodsFor: 'cart interface - private' stamp: 'MatiasCra 11/9/2023 13:35:52'!
+!InternalClientInterface methodsFor: 'cart interface - private' stamp: 'MatiasCra 11/9/2023 15:40:38'!
 purchasesFor: aClientId
 
-	^ (purchases at: aClientId ifAbsent: [ ^ SalesBook new ])! !
+	^ PurchasesList for: (purchases at: aClientId ifAbsent: [ ^ SalesBook new ])! !
 
 !InternalClientInterface methodsFor: 'cart interface - private' stamp: 'MatiasCra 11/9/2023 14:07:45'!
 saveNewCart: aCartId for: aClientId
@@ -1120,6 +1137,66 @@ authenticator: aUserAuthenticator catalogue: aCatalogue merchantProcessor: aMerc
 		initializeWithAuthenticator: aUserAuthenticator
 		catalogue: aCatalogue
 		merchantProcessor: aMerchantProcessor timeProvider: aTimeProvider.! !
+
+
+!classDefinition: #PurchasesList category: 'TusLibros'!
+Object subclass: #PurchasesList
+	instanceVariableNames: 'items salesBook total'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!PurchasesList methodsFor: 'testing' stamp: 'MatiasCra 11/9/2023 15:38:54'!
+includes: anItem
+
+	 ^ items includes: anItem! !
+
+!PurchasesList methodsFor: 'testing' stamp: 'MatiasCra 11/9/2023 15:39:03'!
+isEmpty
+
+	 ^ items isEmpty! !
+
+
+!PurchasesList methodsFor: 'accessing' stamp: 'MatiasCra 11/9/2023 15:40:02'!
+occurrencesOf: anItem
+
+	^ items occurrencesOf: anItem! !
+
+!PurchasesList methodsFor: 'accessing' stamp: 'MatiasCra 11/9/2023 15:37:56'!
+size
+
+	^ items size! !
+
+!PurchasesList methodsFor: 'accessing' stamp: 'MatiasCra 11/9/2023 15:39:13'!
+total
+
+	^ total! !
+
+
+!PurchasesList methodsFor: 'initialization' stamp: 'MatiasCra 11/9/2023 15:38:27'!
+computeItems
+
+	salesBook do: [ :item | items add: item ]! !
+
+!PurchasesList methodsFor: 'initialization' stamp: 'MatiasCra 11/9/2023 15:39:33'!
+initializeFor: aSalesBook
+
+	salesBook := aSalesBook.
+
+	total := salesBook total.
+	items := Bag new.
+	self computeItems.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PurchasesList class' category: 'TusLibros'!
+PurchasesList class
+	instanceVariableNames: ''!
+
+!PurchasesList class methodsFor: 'instance creation' stamp: 'MatiasCra 11/9/2023 15:34:11'!
+for: aSalesBook
+
+	^ self new initializeFor: aSalesBook! !
 
 
 !classDefinition: #Sale category: 'TusLibros'!
@@ -1196,6 +1273,11 @@ initialize
 	sales := OrderedCollection new.
 ! !
 
+
+!SalesBook methodsFor: 'queries' stamp: 'MatiasCra 11/9/2023 15:36:04'!
+do: perItemClosure
+
+	sales do: [ :sale | sale items do: perItemClosure ]! !
 
 !SalesBook methodsFor: 'queries' stamp: 'MatiasCra 11/9/2023 13:36:40'!
 occurrencesOf: anItem
